@@ -3,8 +3,8 @@ import random
 from datetime import datetime, timedelta, timezone
 import starkbank
 
-from src.shared.config import PRIVATE_KEY_CONTENT, PROJECT_ID
-from src.cronjob.fake_info import fake_amount, fake_full_name, generate_cpf
+from shared.config import PRIVATE_KEY_CONTENT, PROJECT_ID
+from cronjob.fake_info import fake_amount, fake_full_name, generate_cpf
 
 
 def set_project() -> starkbank.Project:
@@ -17,18 +17,20 @@ def set_project() -> starkbank.Project:
 
 def generate_invoices() -> list[starkbank.Invoice]:
     number_of_invoices = random.randint(8, 12)
-    return [ starkbank.Invoice(
-                    amount=fake_amount,
-                    name=fake_full_name,
-                    tax_id=generate_cpf, 
-                    due=datetime.now(timezone.utc) + timedelta(hours=1),
-                    expiration=timedelta(hours=3).total_seconds(),
-                    fine=5,  # 5%
-                    interest=2.5,  # 2.5% per month
-                    tags=["immediate"]
-                )
-                for _ in range(number_of_invoices)
-    ]
+    invoices = []
+    for _ in range(number_of_invoices):
+        invoice = starkbank.Invoice(
+                        amount=fake_amount(),
+                        name=fake_full_name(),
+                        tax_id=generate_cpf(), 
+                        due=datetime.now(timezone.utc) + timedelta(hours=1),
+                        expiration=timedelta(hours=3).total_seconds(),
+                        fine=5,  # 5%
+                        interest=2.5,  # 2.5% per month
+                        tags=["immediate"]
+                    )
+        invoices.append(invoice)
+    return invoices
 
 def lambda_handler(event, context):
     print("Invocation event:", event)
