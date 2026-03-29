@@ -46,7 +46,7 @@ resource "aws_lambda_function" "cronjob" {
   filename         = "../dist/cronjob.zip"
   function_name    = "starkbank-cronjob"
   role            = aws_iam_role.cronjob_lambda_role.arn
-  handler         = "src.cronjob.main.lambda_handler"
+  handler         = "src.cronjob.add_invoices.lambda_handler"
   source_code_hash = filebase64sha256("../dist/cronjob.zip")
   runtime         = "python3.11"
   timeout         = 60
