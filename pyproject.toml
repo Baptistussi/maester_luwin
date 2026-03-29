@@ -8,3 +8,8 @@ dependencies = [
     "datetime>=6.0",
     "starkbank>=2.33.0",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
