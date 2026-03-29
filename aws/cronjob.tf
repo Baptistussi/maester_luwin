@@ -55,6 +55,8 @@ resource "aws_lambda_function" "cronjob" {
   environment {
     variables = {
       ENVIRONMENT = var.environment
+      PROJECT_ID   = var.project_id
+      PK_PATH      = "keys/private_key.pem"
     }
   }
 }
