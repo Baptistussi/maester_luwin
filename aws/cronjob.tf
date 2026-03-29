@@ -34,9 +34,9 @@ resource "aws_iam_role_policy" "cronjob_lambda_policy" {
       {
         Effect = "Allow"
         Action = [
-          "sts:GetCallerIdentity"
+          "ssm:GetParameter"
         ]
-        Resource = "*"
+        Resource = "arn:aws:ssm:*:*:parameter/starkbank/*"
       }
     ]
   })
@@ -54,9 +54,9 @@ resource "aws_lambda_function" "cronjob" {
 
   environment {
     variables = {
-      ENVIRONMENT = var.environment
-      PROJECT_ID   = var.project_id
-      PK_PATH      = "keys/private_key.pem"
+      ENVIRONMENT    = var.environment
+      PROJECT_ID     = var.project_id
+      SSM_PARAM_NAME = "/starkbank/private-key"
     }
   }
 }

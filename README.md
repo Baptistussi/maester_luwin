@@ -7,6 +7,15 @@ gabriel.baptistussi@gmail.com
 - AWS CLI configured with appropriate credentials
 - Terraform >= 1.0 installed
 
+### Store Private Key in SSM
+```bash
+aws ssm put-parameter \
+  --name "/starkbank/private-key" \
+  --value "$(cat keys/private_key.pem)" \
+  --type "SecureString" \
+  --region us-east-1
+```
+
 ### Build
 ```bash
 ./scripts/build.sh cronjob
