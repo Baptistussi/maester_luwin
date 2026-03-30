@@ -8,8 +8,17 @@ This repository sets up an AWS Lambda cronjob that runs on a schedule (via Event
 **How it works:**
 - **EventBridge Scheduler** triggers the Lambda function on a schedule (configurable via `var.cron_schedule`)
 - **Lambda function** (`src/cronjob/add_invoices.py`) generates 8-12 fake invoices with random amounts, names, and CPFs using the Starkbank SDK
-- **SSM Parameter Store** stores the Starkbank private key securely at `/starkbank/private-key`
+- **SSM Parameter Store** stores the Starkbank private key securely at `/starkbank/private-key` (created via Terraform)
 - The Lambda fetches the private key from SSM at runtime and authenticates with Starkbank using the project ID from variables
+
+## Task 2
+
+This task adds a webhook endpoint that receives events from Starkbank. When an invoice event is received, it parses the event and executes a transfer.
+
+**How it works:**
+- **Lambda Function URL** exposes a POST endpoint to receive webhook events from Starkbank
+- **Lambda function** (`src/webhook/webhook.py`) parses the event signature, extracts invoice amount, and executes a transfer
+- Reuses the same SSM parameter and build artifacts from Task 1
 
 ## Setting up environment
 
@@ -38,18 +47,9 @@ source .env
 - AWS CLI configured with appropriate credentials
 - Terraform >= 1.0 installed
 
-### Store Private Key in SSM
-```bash
-aws ssm put-parameter \
-  --name "/starkbank/private-key" \
-  --value "$(cat keys/private_key.pem)" \
-  --type "SecureString" \
-  --region us-east-1
-```
-
 ### Build
 ```bash
-./scripts/build.sh cronjob
+./scripts/build.sh
 ```
 
 ### Deploy
@@ -69,10 +69,3 @@ cron_schedule = "cron(0 12 * * ? *)"  # Daily at noon UTC
 cron_schedule = "cron(0/30 * * * ? *)"  # Every 30 minutes
 ```
 
-
-## Testing locally
-
-- Run the scripts
-```bash
-uv run python -m src.invoices
-```
