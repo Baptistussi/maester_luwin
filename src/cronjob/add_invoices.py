@@ -3,8 +3,8 @@ import random
 from datetime import datetime, timedelta, timezone
 import starkbank
 
-from shared.config import PRIVATE_KEY_CONTENT, PROJECT_ID
-from cronjob.fake_info import fake_amount, fake_full_name, generate_cpf
+from src.shared.config import PRIVATE_KEY_CONTENT, PROJECT_ID
+from src.cronjob.fake_info import fake_amount, fake_full_name, generate_cpf
 
 
 def set_project() -> starkbank.Project:

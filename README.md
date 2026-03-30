@@ -1,6 +1,27 @@
 Project created by Gabriel Baptistussi
 gabriel.baptistussi@gmail.com
 
+## Setting up environment
+
+### Sync uv environment
+
+```bash
+uv sync
+```
+
+### Set env vars
+
+- Copy .env.example into .env:
+```bash
+cp .env.example .env
+```
+
+- Edit .env with your project id and path to api key
+- Load .env
+```bash
+source .env
+```
+
 ## Cronjob Deployment
 
 ### Prerequisites
@@ -41,18 +62,7 @@ cron_schedule = "cron(0/30 * * * ? *)"  # Every 30 minutes
 
 ## Testing locally
 
-- Copy .env.example into .env:
-```bash
-cp .env.example .env
-```
-
-- Edit .env with your project id and path to api key
-- Load .env
-```bash
-source .env
-```
-
 - Run the scripts
 ```bash
-uv run python src/invoices.py
+uv run python -m src.invoices
 ```
