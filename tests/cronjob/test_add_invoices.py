@@ -1,5 +1,7 @@
 import os
 
+os.environ["LOCAL_ENV"] = "true"
+os.environ["PK_PATH"] = "tests/mockKey.pem"
 os.environ["PROJECT_ID"] = "123"
 
 from unittest.mock import MagicMock
