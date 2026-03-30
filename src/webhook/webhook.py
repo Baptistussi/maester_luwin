@@ -1,5 +1,13 @@
 import json
 import starkbank
+from src.shared.config import PRIVATE_KEY_CONTENT, PROJECT_ID
+
+
+def set_project() -> starkbank.Project:
+    project = starkbank.Project(
+        environment="sandbox", id=PROJECT_ID, private_key=PRIVATE_KEY_CONTENT
+    )
+    starkbank.user = project
 
 
 def unpack_event(body, headers):
@@ -14,21 +22,27 @@ def get_invoice_amount(event):
         return event.log.invoice.amount
 
 
-def execute_transfer(amount):
-    transfer = starkbank.Transfer(
-        amount=amount,
-        tax_id="20.018.183/0001-80",
-        name="Stark Bank S.A.",
-        bank_code="20018183",
-        branch_code="0001",
-        account_number="6341320293482496",
-        tags=["webhook transfer"],
-        account_type="payment",
-    )
-    return starkbank.transfer.create(transfer)
+def generate_transfer(amount) -> list[starkbank.Transfer]:
+    transfers = [
+        starkbank.Transfer(
+            amount=amount,
+            tax_id="20.018.183/0001-80",
+            name="Stark Bank S.A.",
+            bank_code="20018183",
+            branch_code="0001",
+            account_number="6341320293482496",
+            tags=["webhook transfer"],
+            account_type="payment",
+        )
+    ]
+    return transfers
 
 
 def lambda_handler(event, context):
+    print("Invocation event:", event)
+
+    set_project()
+    print("Starkbank project set")
     try:
         body = event.get("body", "{}")
         headers = event.get("headers", {})
@@ -39,7 +53,10 @@ def lambda_handler(event, context):
         if not amount:
             raise Exception("Couldn't get invoice amount from the data received.")
 
-        execute_transfer(amount)
+        transfers = generate_transfer(amount)
+        print(f"Generated transfer for {amount}")
+
+        starkbank.transfer.create(transfers)
 
         return {
             "statusCode": 200,
