@@ -1,6 +1,5 @@
-import pytest
 from unittest.mock import patch, MagicMock
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 with patch.dict("os.environ", {"PK_PATH": "keys/private_key.pem", "PROJECT_ID": "123"}):
     with patch("builtins.open", MagicMock()):

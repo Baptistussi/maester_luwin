@@ -35,6 +35,12 @@ Place your Starkbank API keys in the `keys/` directory:
 uv sync
 ```
 
+### Set up pre-commit
+
+```bash
+uv run pre-commit install
+```
+
 ### Set env vars
 
 - Copy .env.example into .env:

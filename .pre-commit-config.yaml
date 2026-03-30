@@ -3,5 +3,12 @@ repos:
     rev: v0.8.0
     hooks:
       - id: ruff
-        args: [--fix]
-      - id: ruff-format
+        name: ruff format
+        entry: ruff format .
+        language: system
+        types_or: [python, pyi]
+      - id: ruff
+        name: ruff check
+        entry: ruff check --fix
+        language: system
+        types_or: [python, pyi]
