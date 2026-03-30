@@ -11,9 +11,11 @@ def set_project() -> starkbank.Project:
 
 
 def unpack_event(body, headers):
+    signature = headers.get("Digital-Signature") or headers.get("digital-signature")
+    print(f"Call signature: {signature}")
     return starkbank.event.parse(
         content=body,
-        signature=headers.get("Digital-Signature"),
+        signature=signature,
     )
 
 
@@ -48,7 +50,7 @@ def lambda_handler(event, context):
         headers = event.get("headers", {})
 
         event = unpack_event(body, headers)
-        print(f"Unpacked event: {event}")
+        print("Unpacked event")
 
         amount = get_invoice_amount(event)
         print(f"Got invoice amount: {amount}")
@@ -68,4 +70,5 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
+        print(f"Error: {str(e)}")
         return {"statusCode": 400, "body": json.dumps({"error": str(e)})}
