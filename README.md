@@ -22,6 +22,13 @@ This task adds a webhook endpoint that receives events from Starkbank. When an i
 
 ## Setting up environment
 
+### Store API Keys
+
+Place your Starkbank API keys in the `keys/` directory:
+
+- `keys/privateKey.pem` - Your Starkbank private key
+- `keys/publicKey.pem` - Your Starkbank public key (optional)
+
 ### Sync uv environment
 
 ```bash
