@@ -28,6 +28,12 @@ This task adds a webhook endpoint that receives events from Starkbank. When an i
 uv sync
 ```
 
+### Set up pre-commit
+
+```bash
+uv run pre-commit install
+```
+
 ### Set env vars
 
 - Copy .env.example into .env:
