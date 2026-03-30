@@ -1,6 +1,16 @@
 Project created by Gabriel Baptistussi
 gabriel.baptistussi@gmail.com
 
+## Task 1
+
+This repository sets up an AWS Lambda cronjob that runs on a schedule (via EventBridge Scheduler) to generate and create invoices using the Starkbank SDK.
+
+**How it works:**
+- **EventBridge Scheduler** triggers the Lambda function on a schedule (configurable via `var.cron_schedule`)
+- **Lambda function** (`src/cronjob/add_invoices.py`) generates 8-12 fake invoices with random amounts, names, and CPFs using the Starkbank SDK
+- **SSM Parameter Store** stores the Starkbank private key securely at `/starkbank/private-key`
+- The Lambda fetches the private key from SSM at runtime and authenticates with Starkbank using the project ID from variables
+
 ## Setting up environment
 
 ### Sync uv environment
