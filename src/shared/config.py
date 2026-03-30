@@ -11,10 +11,10 @@ if not PROJECT_ID:
 if LOCAL_ENV:
     if not PK_PATH:
         raise Exception("Necessary env var for LOCAL_ENV PK_PATH not set.")
-    
+
     with open(PK_PATH, "r") as key_file:
         PRIVATE_KEY_CONTENT = key_file.read()
-    
+
         if not PRIVATE_KEY_CONTENT:
             raise Exception(f"Failed to load key from {PK_PATH}")
 else:
