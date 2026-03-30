@@ -35,6 +35,10 @@ def lambda_handler(event, context):
 
         event = unpack_event(body, headers)
         amount = get_invoice_amount(event)
+
+        if not amount:
+            raise Exception("Couldn't get invoice amount from the data received.")
+
         execute_transfer(amount)
 
         return {
