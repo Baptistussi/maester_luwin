@@ -48,7 +48,10 @@ def lambda_handler(event, context):
         headers = event.get("headers", {})
 
         event = unpack_event(body, headers)
+        print(f"Unpacked event: {event}")
+
         amount = get_invoice_amount(event)
+        print(f"Got invoice amount: {amount}")
 
         if not amount:
             raise Exception("Couldn't get invoice amount from the data received.")
