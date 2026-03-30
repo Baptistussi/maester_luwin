@@ -1,3 +1,10 @@
+resource "aws_ssm_parameter" "private_key" {
+  name        = "/starkbank/private-key"
+  description = "Starkbank private key for invoice processing"
+  type        = "SecureString"
+  value       = file("${path.module}/../keys/privateKey.pem")
+}
+
 resource "aws_iam_role" "cronjob_lambda_role" {
   name = "cronjob-lambda-role"
 
@@ -45,12 +52,12 @@ resource "aws_iam_role_policy" "cronjob_lambda_policy" {
 resource "aws_lambda_function" "cronjob" {
   filename         = "../dist/cronjob.zip"
   function_name    = "starkbank-cronjob"
-  role            = aws_iam_role.cronjob_lambda_role.arn
-  handler         = "src.cronjob.add_invoices.lambda_handler"
+  role             = aws_iam_role.cronjob_lambda_role.arn
+  handler          = "cronjob.add_invoices.lambda_handler"
   source_code_hash = filebase64sha256("../dist/cronjob.zip")
-  runtime         = "python3.11"
-  timeout         = 60
-  memory_size     = 128
+  runtime          = "python3.11"
+  timeout          = 60
+  memory_size      = 128
 
   environment {
     variables = {
