@@ -21,7 +21,7 @@ jobs:
         run: uv sync --extra dev
 
       - name: Run tests
-        run: PYTHONPATH=. uv run pytest tests/ -v
+        run: PYTHONPATH=. uv run python -m pytest tests/ -v
 
   deploy:
     needs: test

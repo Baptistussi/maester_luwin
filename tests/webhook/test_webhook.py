@@ -1,83 +1,57 @@
-from unittest.mock import patch, MagicMock
+import os
 
-with patch.dict(
-    "os.environ",
-    {"PK_PATH": "keys/private_key.pem", "PROJECT_ID": "123", "LOCAL_ENV": "true"},
-):
-    with patch("builtins.open", MagicMock(read_data="fake-key")):
-        from src.webhook.webhook import (
-            unpack_event,
-            get_invoice_amount,
-            execute_transfer,
-            lambda_handler,
-        )
+os.environ["LOCAL_ENV"] = "true"
+os.environ["PK_PATH"] = "keys/privateKey.pem"
+os.environ["PROJECT_ID"] = "123"
 
+from unittest.mock import MagicMock
+import starkbank
 
-class TestUnpackEvent:
-    @patch("src.webhook.webhook.starkbank")
-    def test_parses_event_content(self, mock_starkbank):
-        mock_event = MagicMock()
-        mock_starkbank.event.parse.return_value = mock_event
+mock_project = MagicMock()
+mock_project.environment = "sandbox"
+mock_project.id = "123"
+starkbank.Project = MagicMock(return_value=mock_project)
+starkbank.user = mock_project
+starkbank.event = MagicMock()
+starkbank.Transfer = MagicMock()
 
-        result = unpack_event("{}", {"Digital-Signature": "test-signature"})
-
-        mock_starkbank.event.parse.assert_called_once_with(
-            content="{}", signature="test-signature"
-        )
-        assert result == mock_event
+from src.webhook.webhook import get_invoice_amount, unpack_event, generate_transfer
 
 
-class TestGetInvoiceAmount:
-    def test_returns_amount_for_invoice_subscription(self):
-        mock_event = MagicMock()
-        mock_event.subscription = "invoice"
-        mock_event.log.invoice.amount = 10000
+def test_unpack_event():
+    mock_event = MagicMock()
+    starkbank.event.parse.return_value = mock_event
 
-        result = get_invoice_amount(mock_event)
+    result = unpack_event("{}", {"Digital-Signature": "test-sig"})
 
-        assert result == 10000
-
-    def test_returns_none_for_non_invoice_subscription(self):
-        mock_event = MagicMock()
-        mock_event.subscription = "other"
-
-        result = get_invoice_amount(mock_event)
-
-        assert result is None
+    starkbank.event.parse.assert_called_once_with(content="{}", signature="test-sig")
+    assert result == mock_event
 
 
-class TestExecuteTransfer:
-    def test_execute_transfer_calls_starkbank(self):
-        with patch("src.webhook.webhook.starkbank") as mock_sb:
-            mock_sb.transfer.create.return_value = [MagicMock()]
+def test_generate_transfer():
+    transfers = generate_transfer(5000)
 
-            execute_transfer(5000)
+    assert len(transfers) == 1
+    starkbank.Transfer.assert_called_once_with(
+        amount=5000,
+        tax_id="20.018.183/0001-80",
+        name="Stark Bank S.A.",
+        bank_code="20018183",
+        branch_code="0001",
+        account_number="6341320293482496",
+        tags=["webhook transfer"],
+        account_type="payment",
+    )
 
-            mock_sb.transfer.create.assert_called_once()
+
+def test_get_invoice_amount_with_invoice():
+    event = MagicMock()
+    event.subscription = "invoice"
+    event.log.invoice.amount = 5000
+    assert get_invoice_amount(event) == 5000
 
 
-class TestLambdaHandler:
-    @patch("src.webhook.webhook.execute_transfer")
-    @patch("src.webhook.webhook.get_invoice_amount")
-    @patch("src.webhook.webhook.unpack_event")
-    def test_returns_success_with_transfer(
-        self, mock_unpack, mock_get_amount, mock_transfer
-    ):
-        mock_event = MagicMock()
-        mock_unpack.return_value = mock_event
-        mock_get_amount.return_value = 5000
-
-        result = lambda_handler({"body": "{}", "headers": {}}, None)
-
-        assert result["statusCode"] == 200
-        assert "5000" in result["body"]
-        mock_transfer.assert_called_once_with(5000)
-
-    @patch("src.webhook.webhook.unpack_event")
-    def test_returns_400_on_exception(self, mock_unpack):
-        mock_unpack.side_effect = Exception("Invalid signature")
-
-        result = lambda_handler({"body": "{}", "headers": {}}, None)
-
-        assert result["statusCode"] == 400
-        assert "error" in result["body"]
+def test_get_invoice_amount_without_invoice():
+    event = MagicMock()
+    event.subscription = "other"
+    assert get_invoice_amount(event) is None

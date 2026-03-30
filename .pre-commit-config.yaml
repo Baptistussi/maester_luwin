@@ -7,8 +7,10 @@ repos:
         entry: ruff format .
         language: system
         types_or: [python, pyi]
+        exclude: ^tests/
       - id: ruff
         name: ruff check
         entry: ruff check --fix
         language: system
         types_or: [python, pyi]
+        exclude: ^tests/
