@@ -1,19 +1,44 @@
 import random
 
 names = [
-    "Joaquim", "João", "Antônio", "José", "Pedro", "Sebastião", "Miguel", "Antenor", "Jeremias",
-    "Gertrude", "Rosa", "Amália", "Maria", "Amanda", "Serafina", "Madalenha", "Paula"
+    "Joaquim",
+    "João",
+    "Antônio",
+    "José",
+    "Pedro",
+    "Sebastião",
+    "Miguel",
+    "Antenor",
+    "Jeremias",
+    "Gertrude",
+    "Rosa",
+    "Amália",
+    "Maria",
+    "Amanda",
+    "Serafina",
+    "Madalenha",
+    "Paula",
 ]
 
 surnames = [
-    "Ferreira", "Teixeira", "Siqueira", "Marinho", "Safra", "Matarazzo", "Lopes", "Figueira"
+    "Ferreira",
+    "Teixeira",
+    "Siqueira",
+    "Marinho",
+    "Safra",
+    "Matarazzo",
+    "Lopes",
+    "Figueira",
 ]
+
 
 def fake_full_name():
     return f"{random.choice(names)} {random.choice(surnames)}"
 
+
 def fake_amount():
-    return random.randint(1000, 1000000) # R$ 10,00 ~ R$ 10.000,00
+    return random.randint(1000, 1000000)  # R$ 10,00 ~ R$ 10.000,00
+
 
 def generate_cpf():
     # Generate first 9 digits
@@ -30,5 +55,5 @@ def generate_cpf():
     cpf.append(d2)
 
     # Convert to string format XXX.XXX.XXX-YY
-    cpf_str = ''.join(map(str, cpf))
+    cpf_str = "".join(map(str, cpf))
     return f"{cpf_str[:3]}.{cpf_str[3:6]}.{cpf_str[6:9]}-{cpf_str[9:]}"
