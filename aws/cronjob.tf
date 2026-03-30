@@ -50,11 +50,11 @@ resource "aws_iam_role_policy" "cronjob_lambda_policy" {
 }
 
 resource "aws_lambda_function" "cronjob" {
-  filename         = "../dist/cronjob.zip"
+  filename         = "../dist/lambda.zip"
   function_name    = "starkbank-cronjob"
   role             = aws_iam_role.cronjob_lambda_role.arn
   handler          = "src.cronjob.add_invoices.lambda_handler"
-  source_code_hash = filebase64sha256("../dist/cronjob.zip")
+  source_code_hash = filebase64sha256("../dist/lambda.zip")
   runtime          = "python3.11"
   timeout          = 60
   memory_size      = 128
